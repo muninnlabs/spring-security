@@ -8,7 +8,15 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+
+import javax.swing.*;
 
 @Configuration
 @EnableWebSecurity
@@ -19,26 +27,47 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        // 1. Allow unauthenticated access to the H2 Console path
                         .requestMatchers(PathRequest.toH2Console()).permitAll()
-                        // --- Allow unauthenticated access to /users and any sub-paths
                         .requestMatchers("/users/**").permitAll()
-                        // Allow access to forward dispatcher types
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers("/login").permitAll()
                         .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.FORWARD).permitAll()
-                        // All other requests must be authenticated
                         .anyRequest().authenticated()
                 )
-                // 2. Disable CSRF protection specifically for the H2 Console path
                 .csrf(csrf -> csrf
                         .ignoringRequestMatchers(PathRequest.toH2Console())
                         .ignoringRequestMatchers("/users/**", "/users")
                 )
-                // 3. Disable X-Frame-Options protection for the H2 Console to work in an iframe
                 .headers(headers -> headers
                         .frameOptions(HeadersConfigurer.FrameOptionsConfig::disable)
                 )
-                .formLogin(Customizer.withDefaults())
+                .oauth2Login(oauth -> oauth
+                    .loginPage("/login")
+                    .defaultSuccessUrl("/users", true)
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/users", true)
+                        .permitAll()
+                )
                 .httpBasic(Customizer.withDefaults());
         return http.build();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        UserDetails regularUser = User.builder()
+                    .username("jane.oauth")
+                .password("$2a$04$exTeiMzcYrr1jCx/mSPXkeGfYYEEo1MEcVnrRkk7b0vdkt/GvUE5C")
+                .roles("USER")
+                .build();
+
+        return new InMemoryUserDetailsManager(regularUser);
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }

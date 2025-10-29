@@ -22,7 +22,7 @@ public class Instantiation implements CommandLineRunner {
                 "John",                     // name
                 "Doe",                      // lastName
                 "johndoe",                  // userName (@NonNull)
-                "password123",              // password (@NonNull)
+                "$2a$04$exTeiMzcYrr1jCx/mSPXkeGfYYEEo1MEcVnrRkk7b0vdkt/GvUE5C",              // password (@NonNull)
                 "USER",                     // role
                 "john.doe@example.com",     // email (@NonNull)
                 "LOCAL",                    // provider
@@ -37,7 +37,7 @@ public class Instantiation implements CommandLineRunner {
                 "Jane",                     // name
                 "Smith",                    // lastName
                 "jane.oauth",               // userName (@NonNull)
-                "OAuth-Placeholder",        // password (@NonNull, placeholder)
+                "$2a$04$exTeiMzcYrr1jCx/mSPXkeGfYYEEo1MEcVnrRkk7b0vdkt/GvUE5C",        // password (@NonNull, placeholder)
                 "ADMIN",                    // role
                 "jane.smith@oauth.com",     // email (@NonNull)
                 "GOOGLE",                   // provider

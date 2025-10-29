@@ -13,7 +13,7 @@ public class UserController {
     @Autowired
     public UserService userService;
 
-    @RequestMapping(value = "/", method = RequestMethod.GET)
+    @RequestMapping(value = {"", "/"}, method = RequestMethod.GET)
     public Object getAllUsers() {
         return userService.findAll();
     }
