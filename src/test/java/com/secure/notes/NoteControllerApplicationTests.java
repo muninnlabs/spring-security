@@ -1,10 +1,10 @@
-package com.example.munninlabs.springsecurity;
+package com.secure.notes;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SpringsecurityApplicationTests {
+class NoteControllerApplicationTests {
 
 	@Test
 	void contextLoads() {
